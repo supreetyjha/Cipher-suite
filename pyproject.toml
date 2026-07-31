@@ -1,0 +1,12 @@
+[project]
+name = "cipher-suite"
+version = "0.1.0"
+description = "A cryptography toolkit covering classical ciphers and modern encryption primitives."
+requires-python = ">=3.10"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["core*", "api*"]
