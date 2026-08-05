@@ -1,21 +1,54 @@
 import { useState } from "react";
-import { encryptCaesar, decryptCaesar } from "./api/client";
+import {
+  caesarEncrypt, caesarDecrypt,
+  vigenereEncrypt, vigenereDecrypt,
+  playfairEncrypt, playfairDecrypt,
+  railFenceEncrypt, railFenceDecrypt,
+  analyzeFrequency, bruteForceCaesar,
+} from "./api/client";
+
+const CIPHERS = {
+  caesar: { label: "Caesar", keyLabel: "Shift (0-25)", keyType: "number" },
+  vigenere: { label: "Vigenère", keyLabel: "Key (letters)", keyType: "text" },
+  playfair: { label: "Playfair", keyLabel: "Key (letters)", keyType: "text" },
+  railfence: { label: "Rail Fence", keyLabel: "Rails (2-20)", keyType: "number" },
+};
 
 function App() {
+  const [cipher, setCipher] = useState("caesar");
   const [text, setText] = useState("");
-  const [shift, setShift] = useState(3);
+  const [keyVal, setKeyVal] = useState("");
   const [result, setResult] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [bruteResults, setBruteResults] = useState(null);
+  const [freqResults, setFreqResults] = useState(null);
+
+  const config = CIPHERS[cipher];
 
   async function handle(action) {
     setError("");
     setResult("");
     setLoading(true);
     try {
-      const data = action === "encrypt"
-        ? await encryptCaesar(text, Number(shift))
-        : await decryptCaesar(text, Number(shift));
+      let data;
+      if (cipher === "caesar") {
+        data = action === "encrypt"
+          ? await caesarEncrypt(text, Number(keyVal))
+          : await caesarDecrypt(text, Number(keyVal));
+      } else if (cipher === "vigenere") {
+        data = action === "encrypt"
+          ? await vigenereEncrypt(text, keyVal)
+          : await vigenereDecrypt(text, keyVal);
+      } else if (cipher === "playfair") {
+        data = action === "encrypt"
+          ? await playfairEncrypt(text, keyVal)
+          : await playfairDecrypt(text, keyVal);
+      } else if (cipher === "railfence") {
+        data = action === "encrypt"
+          ? await railFenceEncrypt(text, Number(keyVal))
+          : await railFenceDecrypt(text, Number(keyVal));
+      }
       setResult(data.result);
     } catch (e) {
       setError(e.message);
@@ -24,11 +57,41 @@ function App() {
     }
   }
 
+  async function handleAnalyze() {
+    setError("");
+    setFreqResults(null);
+    setBruteResults(null);
+    setLoading(true);
+    try {
+      const [freq, brute] = await Promise.all([
+        analyzeFrequency(text),
+        bruteForceCaesar(text),
+      ]);
+      setFreqResults(freq.frequencies);
+      setBruteResults(brute.attempts);
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
-    <div className="min-h-screen bg-neutral-950 text-neutral-200 font-mono flex items-center justify-center px-4">
+    <div className="min-h-screen bg-neutral-950 text-neutral-200 font-mono flex items-center justify-center px-4 py-10">
       <div className="w-full max-w-md border border-neutral-800 rounded-md p-6">
         <h1 className="text-lg mb-1 text-neutral-100">Cipher Suite</h1>
-        <p className="text-xs text-neutral-500 mb-6">Caesar Cipher</p>
+        <p className="text-xs text-neutral-500 mb-6">Classical Cryptography Toolkit</p>
+
+        <label className="block text-xs text-neutral-500 mb-1">Cipher</label>
+        <select
+          value={cipher}
+          onChange={(e) => { setCipher(e.target.value); setResult(""); setError(""); }}
+          className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-sm mb-4 focus:outline-none focus:border-neutral-600"
+        >
+          {Object.entries(CIPHERS).map(([key, c]) => (
+            <option key={key} value={key}>{c.label}</option>
+          ))}
+        </select>
 
         <label className="block text-xs text-neutral-500 mb-1">Text</label>
         <textarea
@@ -38,40 +101,72 @@ function App() {
           className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-sm mb-4 focus:outline-none focus:border-neutral-600"
         />
 
-        <label className="block text-xs text-neutral-500 mb-1">Shift (0-25)</label>
+        <label className="block text-xs text-neutral-500 mb-1">{config.keyLabel}</label>
         <input
-          type="number"
-          min={0}
-          max={25}
-          value={shift}
-          onChange={(e) => setShift(e.target.value)}
-          className="w-24 bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-sm mb-4 focus:outline-none focus:border-neutral-600"
+          type={config.keyType}
+          value={keyVal}
+          onChange={(e) => setKeyVal(e.target.value)}
+          className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-sm mb-4 focus:outline-none focus:border-neutral-600"
         />
 
-        <div className="flex gap-2 mb-4">
+        <div className="flex gap-2 mb-2">
           <button
             onClick={() => handle("encrypt")}
-            disabled={loading || !text}
+            disabled={loading || !text || !keyVal}
             className="flex-1 bg-neutral-100 text-neutral-900 text-sm rounded px-3 py-2 disabled:opacity-40"
           >
             Encrypt
           </button>
           <button
             onClick={() => handle("decrypt")}
-            disabled={loading || !text}
+            disabled={loading || !text || !keyVal}
             className="flex-1 border border-neutral-700 text-sm rounded px-3 py-2 disabled:opacity-40"
           >
             Decrypt
           </button>
         </div>
 
+        {cipher === "caesar" && (
+          <button
+            onClick={handleAnalyze}
+            disabled={loading || !text}
+            className="w-full border border-neutral-800 text-xs text-neutral-400 rounded px-3 py-2 mb-4 disabled:opacity-40"
+          >
+            Run Frequency Analysis + Brute Force
+          </button>
+        )}
+
         {error && <p className="text-xs text-red-400 mb-2">{error}</p>}
 
         {result && (
-          <div>
+          <div className="mb-4">
             <label className="block text-xs text-neutral-500 mb-1">Result</label>
             <div className="bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-sm break-all">
               {result}
+            </div>
+          </div>
+        )}
+
+        {freqResults && (
+          <div className="mb-4">
+            <label className="block text-xs text-neutral-500 mb-1">Letter Frequency (%)</label>
+            <div className="bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-xs flex flex-wrap gap-x-3 gap-y-1">
+              {Object.entries(freqResults).map(([letter, pct]) => (
+                <span key={letter}>{letter}: {pct}%</span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {bruteResults && (
+          <div>
+            <label className="block text-xs text-neutral-500 mb-1">Brute Force (all 26 shifts)</label>
+            <div className="bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-xs max-h-40 overflow-y-auto space-y-0.5">
+              {bruteResults.map(({ shift, result }) => (
+                <div key={shift}>
+                  <span className="text-neutral-600">{shift}:</span> {result}
+                </div>
+              ))}
             </div>
           </div>
         )}
