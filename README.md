@@ -13,10 +13,10 @@ A full-stack cryptography toolkit combining classical ciphers with modern encryp
 
 **Classical Ciphers**
 - ✅ Caesar cipher (encrypt/decrypt)
-- ⬜ Vigenère cipher
-- ⬜ Playfair cipher
-- ⬜ Rail Fence cipher
-- ⬜ Frequency analysis & brute-force cracking
+- ✅ Vigenère cipher
+- ✅ Playfair cipher
+- ✅ Rail Fence cipher
+- ✅ Frequency analysis & brute-force cracking
 
 **Modern Cryptography**
 - ⬜ AES (ECB, CBC, CFB, OFB, GCM modes)
