@@ -1,6 +1,5 @@
 # 🔐 Cipher Suite
 
-[![CI](https://github.com/supreetyjha/cipher-suite/actions/workflows/ci.yml/badge.svg)](https://github.com/supreetyjha/cipher-suite/actions)
 [![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/downloads/release/python-3119/)
 [![FastAPI](https://img.shields.io/badge/backend-FastAPI-009688.svg)](https://fastapi.tiangolo.com/)
 [![React](https://img.shields.io/badge/frontend-React-61DAFB.svg)](https://react.dev/)
