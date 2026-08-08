@@ -1,12 +1,9 @@
 from fastapi import APIRouter, HTTPException
-from core.symmetric import aes
+from core.symmetric import aes, chacha20
 from core.exceptions import InvalidKeyError, UnsupportedModeError, DecryptionError
 from api.schemas.crypto_schemas import (
     AESKeyResponse, AESEncryptRequest, AESEncryptResponse,
     AESDecryptRequest, AESDecryptResponse,
-)
-from core.symmetric import chacha20
-from api.schemas.crypto_schemas import (
     ChaCha20KeyResponse, ChaCha20EncryptRequest, ChaCha20EncryptResponse,
     ChaCha20DecryptRequest, ChaCha20DecryptResponse,
 )
@@ -36,7 +33,8 @@ def aes_decrypt(payload: AESDecryptRequest):
     except (InvalidKeyError, UnsupportedModeError, DecryptionError) as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-    @router.get("/chacha20/generate-key", response_model=ChaCha20KeyResponse)
+
+@router.get("/chacha20/generate-key", response_model=ChaCha20KeyResponse)
 def generate_chacha20_key():
     return ChaCha20KeyResponse(key=chacha20.generate_key())
 
