@@ -19,12 +19,12 @@ A full-stack cryptography toolkit combining classical ciphers with modern encryp
 - ✅ Frequency analysis & brute-force cracking
 
 **Modern Cryptography**
-- ⬜ AES (ECB, CBC, CFB, OFB, GCM modes)
-- ⬜ ChaCha20 stream cipher
-- ⬜ RSA (key generation, encrypt/decrypt, sign/verify)
-- ⬜ Password hashing with Argon2 (salting included)
-- ⬜ Key derivation (PBKDF2 / Argon2 from passphrase)
-- ⬜ Interactive ECB vs. CBC mode visualizer (demonstrates why ECB leaks patterns)
+- ✅ AES (ECB, CBC, CFB, OFB, GCM modes)
+- ✅ ChaCha20 stream cipher
+- ✅ RSA (key generation, encrypt/decrypt, sign/verify)
+- ✅ Password hashing with Argon2 (salting included)
+- ✅ Key derivation (PBKDF2 / Argon2 from passphrase)
+- ✅ Interactive ECB vs. CBC mode visualizer (demonstrates why ECB leaks patterns)
 
 *(Checklist updates as modules are completed — see [Roadmap](#roadmap) below.)*
 
@@ -161,12 +161,13 @@ cd web && npm run lint  # JavaScript/React
 
 - [x] Project architecture & CI pipeline
 - [x] Caesar cipher (backend + frontend, deployed)
-- [ ] Vigenère, Playfair, Rail Fence ciphers
-- [ ] Frequency analysis & brute-force tools
-- [ ] Password hashing with Argon2
-- [ ] AES (multiple modes) + ECB/CBC visual comparison
-- [ ] ChaCha20 stream cipher
-- [ ] RSA key generation, encryption, and signing
-- [ ] Dockerized deployment
+- [x] Vigenère, Playfair, Rail Fence ciphers
+- [x] Frequency analysis & brute-force tools
+- [x] Password hashing with Argon2 (salting included)
+- [x] Key derivation (PBKDF2 / Argon2 from passphrase)
+- [x] AES (ECB, CBC, CFB, OFB, GCM modes)
+- [x] ChaCha20 stream cipher
+- [x] RSA (key generation, encrypt/decrypt, sign/verify)
+- [x] Interactive ECB vs. CBC mode visualizer
 
 ---
