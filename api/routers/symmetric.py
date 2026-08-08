@@ -5,6 +5,11 @@ from api.schemas.crypto_schemas import (
     AESKeyResponse, AESEncryptRequest, AESEncryptResponse,
     AESDecryptRequest, AESDecryptResponse,
 )
+from core.symmetric import chacha20
+from api.schemas.crypto_schemas import (
+    ChaCha20KeyResponse, ChaCha20EncryptRequest, ChaCha20EncryptResponse,
+    ChaCha20DecryptRequest, ChaCha20DecryptResponse,
+)
 
 router = APIRouter()
 
@@ -29,4 +34,26 @@ def aes_decrypt(payload: AESDecryptRequest):
         plaintext = aes.decrypt(payload.ciphertext, payload.key, payload.mode, payload.iv, payload.tag)
         return AESDecryptResponse(plaintext=plaintext)
     except (InvalidKeyError, UnsupportedModeError, DecryptionError) as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    @router.get("/chacha20/generate-key", response_model=ChaCha20KeyResponse)
+def generate_chacha20_key():
+    return ChaCha20KeyResponse(key=chacha20.generate_key())
+
+
+@router.post("/chacha20/encrypt", response_model=ChaCha20EncryptResponse)
+def chacha20_encrypt(payload: ChaCha20EncryptRequest):
+    try:
+        result = chacha20.encrypt(payload.text, payload.key)
+        return ChaCha20EncryptResponse(**result)
+    except InvalidKeyError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.post("/chacha20/decrypt", response_model=ChaCha20DecryptResponse)
+def chacha20_decrypt(payload: ChaCha20DecryptRequest):
+    try:
+        plaintext = chacha20.decrypt(payload.ciphertext, payload.key, payload.nonce)
+        return ChaCha20DecryptResponse(plaintext=plaintext)
+    except InvalidKeyError as e:
         raise HTTPException(status_code=400, detail=str(e))

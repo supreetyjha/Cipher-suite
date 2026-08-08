@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field
 
 
+
 class CaesarRequest(BaseModel):
     text: str = Field(..., min_length=1)
     shift: int = Field(..., ge=0, le=25)
@@ -112,3 +113,67 @@ class AESDecryptRequest(BaseModel):
 
 class AESDecryptResponse(BaseModel):
     plaintext: str
+
+class ChaCha20KeyResponse(BaseModel):
+    key: str
+
+
+class ChaCha20EncryptRequest(BaseModel):
+    text: str = Field(..., min_length=1)
+    key: str = Field(..., min_length=1)
+
+
+class ChaCha20EncryptResponse(BaseModel):
+    ciphertext: str
+    nonce: str
+
+
+class ChaCha20DecryptRequest(BaseModel):
+    ciphertext: str = Field(..., min_length=1)
+    key: str = Field(..., min_length=1)
+    nonce: str = Field(..., min_length=1)
+
+
+class ChaCha20DecryptResponse(BaseModel):
+    plaintext: str
+
+class RSAKeypairResponse(BaseModel):
+    private_key: str
+    public_key: str
+
+
+class RSAEncryptRequest(BaseModel):
+    text: str = Field(..., min_length=1)
+    public_key: str = Field(..., min_length=1)
+
+
+class RSAEncryptResponse(BaseModel):
+    ciphertext: str
+
+
+class RSADecryptRequest(BaseModel):
+    ciphertext: str = Field(..., min_length=1)
+    private_key: str = Field(..., min_length=1)
+
+
+class RSADecryptResponse(BaseModel):
+    plaintext: str
+
+
+class RSASignRequest(BaseModel):
+    message: str = Field(..., min_length=1)
+    private_key: str = Field(..., min_length=1)
+
+
+class RSASignResponse(BaseModel):
+    signature: str
+
+
+class RSAVerifyRequest(BaseModel):
+    message: str = Field(..., min_length=1)
+    signature: str = Field(..., min_length=1)
+    public_key: str = Field(..., min_length=1)
+
+
+class RSAVerifyResponse(BaseModel):
+    valid: bool
